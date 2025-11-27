@@ -151,19 +151,13 @@ class critic_GNN(nn.Module):
         
         # Graph convolution layers with edge features (NNConv)
         # NNConv requires nn that maps edge_attr to in_channels * out_channels
-        self.g1_nn = nn.Sequential(
-            nn.Linear(edge_features, node_features * 15),
-        )
+        self.g1_nn = nn.Linear(edge_features, node_features * 15)
         self.g1 = NNConv(node_features, 15, self.g1_nn, aggr='mean')
         
-        self.g2_nn = nn.Sequential(
-            nn.Linear(edge_features, 15 * 10),
-        )
+        self.g2_nn = nn.Linear(edge_features, 15 * 10)
         self.g2 = NNConv(15, 10, self.g2_nn, aggr='mean')
         
-        self.g3_nn = nn.Sequential(
-            nn.Linear(edge_features, 10 * 10),
-        )
+        self.g3_nn = nn.Linear(edge_features, 10 * 10)
         self.g3 = NNConv(10, 10, self.g3_nn, aggr='mean')
         
         self.g_out = GCNConv(10, 10)
