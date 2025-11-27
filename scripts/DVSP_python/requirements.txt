@@ -1,18 +1,24 @@
-# Core dependencies
-torch>=2.0.0
-torch-geometric>=2.3.0
-numpy>=1.24.0
-scipy>=1.10.0
+# Core dependencies - PyTorch 1.11 required for compatibility
+torch==1.11.0
+torchvision==0.12.0
+torch-geometric>=2.0.0,<2.3.0
+torch-scatter>=2.0.9
+torch-sparse>=0.6.12
+numpy>=1.21.0,<1.24.0
+scipy>=1.7.0
 
 # Machine learning and data processing
-scikit-learn>=1.2.0
+scikit-learn>=1.0.0
 
 # Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
 
 # Progress bars
-tqdm>=4.65.0
+tqdm>=4.62.0
+
+# Graph utilities
+networkx>=2.6.0
 
 # Optional: Optimization solvers
 # gurobipy>=10.0.0  # Commercial solver - requires license
@@ -23,5 +29,6 @@ tqdm>=4.65.0
 # - DecisionFocusedLearningBenchmarks: Requires custom implementation
 # - InferOpt: For Fenchel-Young loss - consider using perturbations library or custom implementation
 
-# Additional utilities
-networkx>=3.0  # For graph operations in GNN
+# IMPORTANT: Ensure PyTorch Geometric is installed with matching PyTorch version:
+# pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
+# pip install torch-geometric

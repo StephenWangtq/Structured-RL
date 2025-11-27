@@ -133,6 +133,7 @@ class critic_GNN(nn.Module):
     
     This network processes graph-structured data representing vehicle routes.
     Converted from Julia GraphNeuralNetworks.jl to PyTorch Geometric.
+    Compatible with PyTorch 1.11 and torch-geometric>=2.0.0,<2.3.0.
     """
     
     def __init__(self, node_features: int, edge_features: int):
@@ -148,14 +149,15 @@ class critic_GNN(nn.Module):
         if not TORCH_GEOMETRIC_AVAILABLE:
             raise ImportError("torch_geometric is required for critic_GNN")
         
-        # Graph convolution layers with edge features
-        self.g1_nn = nn.Linear(edge_features, node_features)
+        # Graph convolution layers with edge features (NNConv)
+        # NNConv requires nn that maps edge_attr to in_channels * out_channels
+        self.g1_nn = nn.Linear(edge_features, node_features * 15)
         self.g1 = NNConv(node_features, 15, self.g1_nn, aggr='mean')
         
-        self.g2_nn = nn.Linear(edge_features, 15)
+        self.g2_nn = nn.Linear(edge_features, 15 * 10)
         self.g2 = NNConv(15, 10, self.g2_nn, aggr='mean')
         
-        self.g3_nn = nn.Linear(edge_features, 10)
+        self.g3_nn = nn.Linear(edge_features, 10 * 10)
         self.g3 = NNConv(10, 10, self.g3_nn, aggr='mean')
         
         self.g_out = GCNConv(10, 10)

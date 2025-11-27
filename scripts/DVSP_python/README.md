@@ -2,6 +2,8 @@
 
 This directory contains a Python implementation of the Dynamic Vehicle Scheduling Problem (DVSP) reinforcement learning algorithms, converted from the original Julia code.
 
+**Important: This implementation requires PyTorch 1.11 for compatibility.**
+
 ## Overview
 
 The code implements three training methods for combinatorial optimization:
@@ -9,11 +11,22 @@ The code implements three training methods for combinatorial optimization:
 2. **PPO** (Proximal Policy Optimization) - `02_PPO.py`
 3. **SRL** (Structured Reinforcement Learning) - `03_SRL.py`
 
+## PyTorch Version Verification
+
+Before running any scripts, verify that you have PyTorch 1.11 installed:
+
+```python
+import torch
+assert torch.__version__.startswith('1.11'), f"Required PyTorch 1.11, got {torch.__version__}"
+print(f"PyTorch version: {torch.__version__}")
+```
+
 ## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.7 or higher (Python 3.8+ recommended)
 - CUDA-capable GPU (recommended for faster training)
+- PyTorch 1.11.0
 
 ### Setup
 
@@ -23,14 +36,24 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-2. Install dependencies:
+2. Install PyTorch 1.11 (choose appropriate CUDA version):
 ```bash
-pip install -r requirements.txt
+# For CUDA 11.3 (recommended)
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+
+# For CPU only
+pip install torch==1.11.0+cpu torchvision==0.12.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
-3. Install PyTorch Geometric (adjust CUDA version as needed):
+3. Install PyTorch Geometric (compatible with PyTorch 1.11):
 ```bash
-pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
+pip install torch-geometric>=2.0.0,<2.3.0
+```
+
+4. Install remaining dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
 ## Data Setup
@@ -242,9 +265,15 @@ To make this code fully functional, you need to implement:
 
 ## Troubleshooting
 
+**PyTorch Version Issues:**
+- This code requires PyTorch 1.11 for compatibility
+- Do NOT use PyTorch 2.0+ as it may have breaking changes
+- Verify your version with: `python -c "import torch; print(torch.__version__)"`
+
 **Import Errors:**
 - Ensure all dependencies are installed
-- Check PyTorch Geometric installation matches your CUDA version
+- Check PyTorch Geometric installation matches your CUDA version and PyTorch 1.11
+- For PyTorch Geometric, use: `pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-1.11.0+cu113.html`
 
 **Memory Issues:**
 - Reduce batch size
@@ -260,6 +289,22 @@ To make this code fully functional, you need to implement:
 - Adjust learning rates
 - Modify perturbation schedules
 - Check critic loss stability
+
+## PyTorch 1.11 Compatibility Notes
+
+This implementation is designed for PyTorch 1.11 and avoids the following PyTorch 2.0+ features:
+- ❌ `torch.compile()` - not available in PyTorch 1.11
+- ❌ `torch.vmap()` - not stable in PyTorch 1.11
+- ❌ `torch.export()` - not available in PyTorch 1.11
+- ❌ New scheduler APIs from PyTorch 2.0+
+
+The implementation uses:
+- ✅ `torch.nn.functional` for activation functions (e.g., `F.celu`, `F.relu`)
+- ✅ `torch.autograd.grad()` for gradient computation
+- ✅ `torch.no_grad()` context manager
+- ✅ Traditional `model.cuda()` and `.to(device)` for device management
+- ✅ `torch.save(model.state_dict(), path)` for model saving
+- ✅ `torch.nn.utils.clip_grad_value_()` for gradient clipping
 
 ## Citation
 
