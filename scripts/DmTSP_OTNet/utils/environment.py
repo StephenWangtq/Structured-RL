@@ -48,7 +48,7 @@ class DmTSPInstance:
         depot_location: np.ndarray,
         time_horizon: float = 100.0,
         request_rate: float = 0.5,
-        service_area: Tuple[float, float, float, float] = (0, 100, 0, 100),
+        service_area: Tuple[float, float, float, float] = (0, 100, 0, 100),  # (x_min, x_max, y_min, y_max)
         seed: Optional[int] = None,
     ):
         """

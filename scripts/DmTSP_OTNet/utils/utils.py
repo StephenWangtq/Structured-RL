@@ -227,7 +227,8 @@ def cheapest_insertion(
     """
     if len(agent_route) == 0:
         # First task - cost is distance from depot and back
-        cost = (np.linalg.norm(request.location - depot_location) * 2 +
+        ROUND_TRIP_FACTOR = 2
+        cost = (np.linalg.norm(request.location - depot_location) * ROUND_TRIP_FACTOR +
                 request.service_time)
         return 0, cost
     

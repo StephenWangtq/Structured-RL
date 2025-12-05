@@ -8,7 +8,6 @@ Implements structured reinforcement learning with:
 """
 
 import os
-import sys
 from pathlib import Path
 import numpy as np
 import torch
@@ -60,6 +59,7 @@ BATCH_SIZE = 16
 LEARNING_RATE = 1e-3
 GAMMA = 0.99  # discount factor
 ENTROPY_COEFF = 0.01  # entropy regularization
+ASSIGNMENT_THRESHOLD = 0.5  # threshold for detecting assignments
 
 # Directories
 LOGDIR = Path("logs")
@@ -155,7 +155,7 @@ def otnet_loss(
         log_prob = 0.0
         for i_agent in range(T.shape[0]):
             for j_task in range(T.shape[1]):
-                if assignment[i_agent, j_task] > 0.5:
+                if assignment[i_agent, j_task] > ASSIGNMENT_THRESHOLD:
                     log_prob += torch.log(T[i_agent, j_task] + 1e-8)
         
         # Policy gradient loss

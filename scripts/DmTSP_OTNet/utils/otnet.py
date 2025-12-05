@@ -259,12 +259,12 @@ class OTLayer(nn.Module):
         # Sinkhorn iterations in log-space
         for _ in range(self.num_iterations):
             # Update f
-            log_sum_exp = torch.logsumexp(log_K + g.unsqueeze(0), dim=1)
-            f = log_b - log_sum_exp
+            log_sum_exp_f = torch.logsumexp(log_K + g.unsqueeze(0), dim=1)
+            f = log_b - log_sum_exp_f
             
             # Update g
-            log_sum_exp = torch.logsumexp(log_K + f.unsqueeze(1), dim=0)
-            g = log_a - log_sum_exp
+            log_sum_exp_g = torch.logsumexp(log_K + f.unsqueeze(1), dim=0)
+            g = log_a - log_sum_exp_g
         
         # Compute transport matrix in log-space
         log_T = f.unsqueeze(1) + log_K + g.unsqueeze(0)
