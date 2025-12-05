@@ -358,7 +358,7 @@ class OTNetPolicy(nn.Module):
         agent_features: torch.Tensor,
         task_features: torch.Tensor,
         edge_index: Optional[torch.Tensor] = None,
-        threshold: float = 0.5,
+        threshold: float = 0.0,  # Lower threshold to allow assignments
     ) -> np.ndarray:
         """
         Get discrete assignment matrix for inference.
@@ -367,7 +367,7 @@ class OTNetPolicy(nn.Module):
             agent_features: [num_agents, agent_feature_dim]
             task_features: [num_tasks, task_feature_dim]
             edge_index: [2, num_edges] for GNN (optional)
-            threshold: Threshold for binarization
+            threshold: Threshold for binarization (default 0.0 to always assign)
         
         Returns:
             Binary assignment matrix Y: [num_agents, num_tasks]
@@ -380,7 +380,7 @@ class OTNetPolicy(nn.Module):
             
             for j in range(T.shape[1]):  # For each task
                 i = torch.argmax(T[:, j])  # Find best agent
-                if T[i, j] > threshold:
-                    Y[i, j] = 1.0
+                # Always assign tasks (threshold 0.0)
+                Y[i, j] = 1.0
             
             return Y.cpu().numpy()

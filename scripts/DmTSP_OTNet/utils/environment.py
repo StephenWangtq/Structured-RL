@@ -210,16 +210,21 @@ class DmTSPEnv:
         self.served_requests = []
         self.episode_reward = 0.0
         
+        # Advance to first request arrival
+        if len(self.all_requests) > 0:
+            self.current_time = self.all_requests[0].arrival_time
+        
         return self._get_current_state()
     
     def _get_current_state(self) -> DmTSPState:
-        """Get current state."""
-        # Get new requests at current time
+        """Get current state without modifying environment."""
+        # Get new requests at current time (don't modify request_idx)
         new_requests = []
-        while (self.request_idx < len(self.all_requests) and 
-               self.all_requests[self.request_idx].arrival_time <= self.current_time):
-            new_requests.append(self.all_requests[self.request_idx])
-            self.request_idx += 1
+        temp_idx = self.request_idx
+        while (temp_idx < len(self.all_requests) and 
+               self.all_requests[temp_idx].arrival_time <= self.current_time):
+            new_requests.append(self.all_requests[temp_idx])
+            temp_idx += 1
         
         return DmTSPState(
             current_time=self.current_time,
@@ -240,8 +245,14 @@ class DmTSPEnv:
         Returns:
             Tuple of (next_state, reward, done, info)
         """
-        state = self._get_current_state()
-        all_unassigned = state.get_all_unassigned()
+        # Get unassigned tasks (new + pending) - before modifying state
+        all_unassigned = self.pending_requests.copy()
+        
+        # Get new requests at current time
+        while (self.request_idx < len(self.all_requests) and 
+               self.all_requests[self.request_idx].arrival_time <= self.current_time):
+            all_unassigned.append(self.all_requests[self.request_idx])
+            self.request_idx += 1
         
         # Record state before assignment for reward calculation
         prev_makespan = self._calculate_makespan()

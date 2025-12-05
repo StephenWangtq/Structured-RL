@@ -360,7 +360,9 @@ def evaluate_policy(
     total_makespans = []
     total_waiting_times = []
     
-    policy.eval()
+    # Set to eval mode if it's a neural network
+    if hasattr(policy, 'eval'):
+        policy.eval()
     
     for _ in range(num_episodes):
         state = env.reset()
